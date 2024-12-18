@@ -1,0 +1,136 @@
+<app-header></app-header>
+<div class="table-container">
+  <table>
+    <thead>
+    <tr>
+      <th class="column-name">Назва</th>
+      <th class="column-category">Категорія</th>
+      <th class="column-price">Ціна</th>
+      <th class="column-prep-time">Час приготування</th>
+      <th class="column-photo">Фото</th>
+      <th>Дії</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let dish of dishes">
+      <td>{{ dish.name }}</td>
+      <td>{{ dish.category }}</td>
+      <td>{{ dish.price | currency:'UAH' }}</td>
+      <td>{{ dish.preparationTime }} хв</td>
+      <td>
+        <img [src]="dish.photoUrl" alt="{{ dish.name }}" class="dish-photo" />
+      </td>
+      <td>
+        <button (click)="confirmDelete(dish.dishId)" class="modify-btn">
+          <img class="modify-icons" src="/assets/images/delete.png" alt="Видалити">
+        </button>
+        <button (click)="openUpdateForm(dish)" class="modify-btn">
+          <img class="modify-icons" src="/assets/images/edit.png" alt="Редагувати">
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <button (click)="openAddForm()">Додати страву</button>
+</div>
+
+<!-- Модальное окно для подтверждения удаления -->
+<div *ngIf="showDeleteModal" class="modal-backdrop">
+  <div class="modal">
+    <h2>Видалити страву?</h2>
+    <p>Ви впевнені, що хочете видалити цю страву?</p>
+    <button (click)="deleteDish()" class="confirm-btn">Так</button>
+    <button (click)="closeDeleteModal()" class="cancel-btn">Скасувати</button>
+  </div>
+</div>
+
+<!-- Форма добавления/обновления блюда -->
+<div *ngIf="isFormVisible" class="modal-overlay">
+  <div class="modal-content">
+    <form #dishForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+      <h3>{{ isUpdating ? 'Оновити Страву' : 'Додати Страву' }}</h3>
+
+      <div class="form-group">
+        <label for="name">Назва</label>
+        <input
+          type="text"
+          id="name"
+          [(ngModel)]="formData.name"
+          name="name"
+          required
+          minlength="2"
+          #name="ngModel"
+        />
+        <div *ngIf="name.invalid && name.touched" class="error">
+          <p *ngIf="name.errors?.['required']">Назва обов'язкова.</p>
+          <p *ngIf="name.errors?.['minlength']">Мінімум 2 символи.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Категорія</label>
+        <input
+          type="text"
+          id="category"
+          [(ngModel)]="formData.category"
+          name="category"
+          required
+          #category="ngModel"
+        />
+        <div *ngIf="category.invalid && category.touched" class="error">
+          <p>Категорія обов'язкова.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Ціна</label>
+        <input
+          type="number"
+          id="price"
+          [(ngModel)]="formData.price"
+          name="price"
+          required
+          min="0"
+          #price="ngModel"
+        />
+        <div *ngIf="price.invalid && price.touched" class="error">
+          <p *ngIf="price.errors?.['required']">Ціна обов'язкова.</p>
+          <p *ngIf="price.errors?.['min']">Ціна повинна бути більше 0.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="preparationTime">Час приготування (хв)</label>
+        <input
+          type="number"
+          id="preparationTime"
+          [(ngModel)]="formData.preparationTime"
+          name="preparationTime"
+          required
+          min="1"
+          #preparationTime="ngModel"
+        />
+        <div *ngIf="preparationTime.invalid && preparationTime.touched" class="error">
+          <p *ngIf="preparationTime.errors?.['required']">Час приготування обов'язковий.</p>
+          <p *ngIf="preparationTime.errors?.['min']">Час повинен бути більше 0.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="photoUrl">Посилання на фото</label>
+        <input
+          type="url"
+          id="photoUrl"
+          [(ngModel)]="formData.photoUrl"
+          name="photoUrl"
+          #photoUrl="ngModel"
+        />
+      </div>
+
+      <button type="submit" [disabled]="dishForm.invalid" class="submit-button">
+        {{ isUpdating ? 'Оновити' : 'Додати' }}
+      </button>
+      <button type="button" class="cancel-button" (click)="closeForm()">Скасувати</button>
+    </form>
+  </div>
+</div>

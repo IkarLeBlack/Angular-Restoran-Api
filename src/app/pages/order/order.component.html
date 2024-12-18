@@ -1,0 +1,133 @@
+<app-header></app-header>
+<div class="table-container">
+  <table>
+    <thead>
+    <tr>
+      <th class="column-id">ID Замовлення</th>
+      <th class="column-event">Подія</th>
+      <th class="column-client">ID Клієнта</th>
+      <th class="column-amount">Загальна Сума</th>
+      <th class="column-status">Статус Замовлення</th>
+      <th>Дії</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let order of orders">
+      <td>{{ order.orderId }}</td>
+      <td>{{ order.event }}</td>
+      <td>{{ order.orderDate }}</td>
+      <td>{{ order.clientId }}</td>
+      <td>{{ order.totalAmount }}</td>
+      <td>{{ order.orderStatus }}</td>
+      <td>
+        <button (click)="confirmDelete(order.orderId)" class="modify-btn">
+          <img class="modify-icons" src="/assets/images/delete.png" alt="Видалити">
+        </button>
+        <button (click)="openUpdateForm(order)" class="modify-btn">
+          <img class="modify-icons" src="/assets/images/edit.png" alt="Редагувати">
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <button (click)="openAddForm()">Додати Замовлення</button>
+</div>
+
+<!-- Модальне вікно для підтвердження видалення -->
+<div *ngIf="showDeleteModal" class="modal-backdrop">
+  <div class="modal">
+    <h2>Видалити замовлення?</h2>
+    <p>Ви впевнені, що хочете видалити це замовлення?</p>
+    <button (click)="deleteOrder()" class="confirm-btn">Так</button>
+    <button (click)="closeDeleteModal()" class="cancel-btn">Скасувати</button>
+  </div>
+</div>
+
+<!-- Форма для додавання/оновлення замовлення -->
+<div *ngIf="isFormVisible" class="modal-overlay">
+  <div class="modal-content">
+    <form #orderForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+      <h3>{{ isUpdating ? 'Оновити Замовлення' : 'Додати Замовлення' }}</h3>
+
+      <div class="form-group">
+        <label for="event">Подія</label>
+        <input
+          type="text"
+          id="event"
+          [(ngModel)]="formData.event"
+          name="event"
+          required
+          #event="ngModel"
+        />
+        <div *ngIf="event.invalid && event.touched" class="error">
+          <p>Подія обов'язкова.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="orderDate">Дата Замовлення</label>
+        <input
+          type="date"
+          id="orderDate"
+          [(ngModel)]="formData.orderDate"
+          name="orderDate"
+          required
+          #orderDate="ngModel"
+        />
+        <div *ngIf="orderDate.invalid && orderDate.touched" class="error">
+          <p>Дата обов'язкова.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="clientId">ID Клієнта</label>
+        <input
+          type="number"
+          id="clientId"
+          [(ngModel)]="formData.clientId"
+          name="clientId"
+          required
+          #clientId="ngModel"
+        />
+        <div *ngIf="clientId.invalid && clientId.touched" class="error">
+          <p>ID Клієнта обов'язковий.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="totalAmount">Загальна Сума</label>
+        <input
+          type="number"
+          id="totalAmount"
+          [(ngModel)]="formData.totalAmount"
+          name="totalAmount"
+          required
+          #totalAmount="ngModel"
+        />
+        <div *ngIf="totalAmount.invalid && totalAmount.touched" class="error">
+          <p>Сума обов'язкова.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="orderStatus">Статус Замовлення</label>
+        <input
+          type="text"
+          id="orderStatus"
+          [(ngModel)]="formData.orderStatus"
+          name="orderStatus"
+          required
+          #orderStatus="ngModel"
+        />
+        <div *ngIf="orderStatus.invalid && orderStatus.touched" class="error">
+          <p>Статус обов'язковий.</p>
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="orderForm.invalid" class="submit-button">
+        {{ isUpdating ? 'Оновити' : 'Додати' }}
+      </button>
+      <button type="button" class="cancel-button" (click)="closeForm()">Скасувати</button>
+    </form>
+  </div>
+</div>

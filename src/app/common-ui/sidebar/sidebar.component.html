@@ -1,0 +1,11 @@
+<nav class="sidebar">
+  <ul class="main-menu-list">
+    @for (menuItem of menuItems; track menuItem){
+    <li>
+      <a class="menu-item" [routerLink]="menuItem.link">
+        <span>{{menuItem.label}}</span>
+      </a>
+    </li>
+    }
+  </ul>
+</nav>

@@ -1,0 +1,114 @@
+<app-header></app-header>
+<div class="table-container">
+  <table>
+    <thead>
+    <tr>
+      <th class="column-name">Ім'я</th>
+      <th class="column-lastname">Прізвище</th>
+      <th class="column-contact">Контактна інформація</th>
+      <th class="column-loyalty">Програма лояльності</th>
+      <th>Дії</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let client of clients">
+      <td>{{ client.firstName }}</td>
+      <td>{{ client.lastName }}</td>
+      <td>{{ client.contactInfo }}</td>
+      <td>{{ client.loyaltyProgram }}</td>
+      <td>
+        <button (click)="confirmDelete(client.clientId)" class="modify-btn">
+          <img class="modify-icons" src="/assets/images/delete.png" alt="Видалити">
+        </button>
+        <button (click)="openUpdateForm(client)" class="modify-btn">
+          <img class="modify-icons" src="/assets/images/edit.png" alt="Редагувати">
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <button (click)="openAddForm()">Додати клієнта</button>
+</div>
+
+<!-- Модальное окно для подтверждения удаления -->
+<div *ngIf="showDeleteModal" class="modal-backdrop">
+  <div class="modal">
+    <h2>Видалити клієнта?</h2>
+    <p>Ви впевнені, що хочете видалити цього клієнта?</p>
+    <button (click)="deleteClient()" class="confirm-btn">Так</button>
+    <button (click)="closeDeleteModal()" class="cancel-btn">Скасувати</button>
+  </div>
+</div>
+
+<!-- Форма добавления/обновления клиента -->
+<div *ngIf="isFormVisible" class="modal-overlay">
+  <div class="modal-content">
+    <form #clientForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+      <h3>{{ isUpdating ? 'Оновити Клієнта' : 'Додати Клієнта' }}</h3>
+
+      <div class="form-group">
+        <label for="firstName">Ім'я</label>
+        <input
+          type="text"
+          id="firstName"
+          [(ngModel)]="formData.firstName"
+          name="firstName"
+          required
+          minlength="2"
+          #firstName="ngModel"
+        />
+        <div *ngIf="firstName.invalid && firstName.touched" class="error">
+          <p *ngIf="firstName.errors?.['required']">Ім'я обов'язкове.</p>
+          <p *ngIf="firstName.errors?.['minlength']">Мінімум 2 символи.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Прізвище</label>
+        <input
+          type="text"
+          id="lastName"
+          [(ngModel)]="formData.lastName"
+          name="lastName"
+          required
+          minlength="2"
+          #lastName="ngModel"
+        />
+        <div *ngIf="lastName.invalid && lastName.touched" class="error">
+          <p *ngIf="lastName.errors?.['required']">Прізвище обов'язкове.</p>
+          <p *ngIf="lastName.errors?.['minlength']">Мінімум 2 символи.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contactInfo">Контактна інформація</label>
+        <input
+          type="text"
+          id="contactInfo"
+          [(ngModel)]="formData.contactInfo"
+          name="contactInfo"
+          required
+          #contactInfo="ngModel"
+        />
+        <div *ngIf="contactInfo.invalid && contactInfo.touched" class="error">
+          <p>Контактна інформація обов'язкова.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="loyaltyProgram">Програма лояльності</label>
+        <input
+          type="text"
+          id="loyaltyProgram"
+          [(ngModel)]="formData.loyaltyProgram"
+          name="loyaltyProgram"
+        />
+      </div>
+
+      <button type="submit" [disabled]="clientForm.invalid" class="submit-button">
+        {{ isUpdating ? 'Оновити' : 'Додати' }}
+      </button>
+      <button type="button" class="cancel-button" (click)="closeForm()">Скасувати</button>
+    </form>
+  </div>
+</div>
